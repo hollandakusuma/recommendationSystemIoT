@@ -224,6 +224,7 @@ Pada bagian ini, evaluasi dilakukan untuk mengukur kinerja model yang telah diba
 #### **Metrik Evaluasi: Cosine Similarity**
 
 Cosine Similarity digunakan untuk mengukur kemiripan antar artikel berdasarkan representasi numeriknya. Formula Cosine Similarity adalah sebagai berikut:
+
 $${Cosine Similarity} = \frac{\mathbf{A} \cdot \mathbf{B}}{\|\mathbf{A}\| \|\mathbf{B}\|}
 $$
 
