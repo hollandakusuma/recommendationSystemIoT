@@ -11,6 +11,7 @@ Penelitian terkini mendukung relevansi sistem rekomendasi dalam ranah ilmiah den
 Melalui proyek ini, diharapkan tercipta solusi inovatif yang dapat mendukung peneliti dalam mengakses literatur ilmiah dengan lebih cepat, relevan, dan personal. Hal ini tidak hanya berkontribusi pada efisiensi penelitian, tetapi juga mempercepat pengembangan ilmu pengetahuan dan inovasi di bidang IoT.
 
 **DAFTAR PUSTAKA**
+
 Ardiansyah, R., Ari Bianto, M., & Saputra, B. D. (2023). Sistem Rekomendasi Buku Perpustakaan Sekolah menggunakan Metode Content-Based Filtering. Jurnal CoSciTech (Computer Science and Information Technology), 4(2), 510–518. https://doi.org/10.37859/coscitech.v4i2.5131
 
 Prasetya, C. S. D. (2017). Sistem Rekomendasi Pada E-Commerce Menggunakan K-Nearest Neighbor. Jurnal Teknologi Informasi Dan Ilmu Komputer, 4(3), 194. https://doi.org/10.25126/jtiik.201743392
