@@ -1,4 +1,3 @@
-![image](https://github.com/user-attachments/assets/5ae14869-e3f3-4367-9e30-33a7471e1aeb)# SISTEM REKOMENDASI ARTIKEL ILMIAH MENGGUNAKAN MACHINE LEARNING
 # Laporan Proyek Machine Learning - Hollanda Arief Kusuma
 
 ## Project Overview
