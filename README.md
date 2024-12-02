@@ -38,12 +38,6 @@ Artikel yang disarankan berdasarkan kata kunci sering kali memiliki relevansi ya
 ### Goals
 **1. Mengembangkan Sistem Rekomendasi Berbasis Konten:**  Menyediakan rekomendasi artikel berdasarkan kesamaan teks yang ada pada judul artikel dengan kata kunci pencarian yang diberikan oleh pengguna. Hal ini bertujuan untuk memberikan rekomendasi yang relevan dengan topik penelitian pengguna.
 
-**2. Meningkatkan Relevansi Rekomendasi Melalui *Collaborative Filtering*:**
-Menerapkan teknik collaborative filtering untuk memberikan rekomendasi yang berdasarkan pada pola interaksi dan kesamaan minat antar pengguna, serta menggunakan informasi seperti jumlah sitasi artikel untuk memperkuat relevansi rekomendasi.
-
-**3. Pendekatan Hybrid:** Menggabungkan kedua pendekatan ini untuk menghasilkan rekomendasi yang lebih kuat dan komprehensif. Dengan pendekatan hybrid, sistem dapat menghasilkan artikel yang tidak hanya relevan secara teks (*content-based*) tetapi juga relevan berdasarkan pola kolaborasi antar peneliti dan kesamaan interaksi (*collaborative*).
-
-
 ### Solution Approach
 **1. Content-Based Filtering**
 
@@ -52,20 +46,6 @@ Pendekatan ini akan mengandalkan konten artikel itu sendiri, khususnya judul art
 *    Menyaring artikel yang judulnya mengandung kata kunci yang diberikan oleh pengguna.
 *    Menghitung kesamaan antara kata kunci dan judul artikel menggunakan teknik TF-IDF (Term Frequency-Inverse Document Frequency) untuk menilai kepentingan setiap kata dalam judul.
 *    Mengurutkan artikel berdasarkan cosine similarity untuk memberikan rekomendasi yang paling relevan.
-
-**2. Collaborative Filtering**
-
-Pendekatan ini menggunakan data interaksi antar pengguna dan artikel untuk mengidentifikasi artikel yang mungkin relevan berdasarkan pola kesamaan antar pengguna atau artikel. Dalam hal ini, artikel yang banyak dirujuk oleh peneliti dengan minat yang sama atau penulis yang sering berkolaborasi akan lebih diprioritaskan.
-
-*    Sistem ini menggunakan Item-Based Collaborative Filtering, yang mengidentifikasi artikel serupa berdasarkan item yang telah dipilih atau diberikan rating oleh pengguna lain.
-*    Artikel yang memiliki jumlah sitasi tinggi juga akan menjadi prioritas dalam rekomendasi, mengingat artikel yang sering dirujuk biasanya memiliki kualitas yang lebih diakui di komunitas akademik.
-
-**3. Hybrid Approach**
-
-Dengan menggabungkan kedua pendekatan di atas, sistem rekomendasi ini akan menghasilkan rekomendasi yang lebih lengkap dan terintegrasi. Kombinasi content-based dan collaborative filtering akan memanfaatkan kekuatan masing-masing pendekatan untuk memberikan rekomendasi yang lebih akurat dan relevan.
-
-*    Pendekatan hybrid ini akan memprioritaskan artikel berdasarkan kesamaan teks serta interaksi pengguna dan jumlah sitasi, sehingga dapat memberikan rekomendasi yang lebih berbobot dan bervariasi.
-*    Sistem ini bertujuan untuk menghasilkan artikel-artikel yang tidak hanya relevan dengan topik riset pengguna tetapi juga dihargai oleh komunitas akademik.    
 
 ----
 ## Data Understanding
@@ -93,35 +73,24 @@ Dataset memiliki 1000 entri dengan beberapa kolom utama yang relevan. Berikut ad
 
 - **'Title':** Judul artikel yang digunakan untuk menemukan artikel berdasarkan kata kunci yang diberikan oleh pengguna.
 - **'Title_cleaned':** Judul artikel setelah dibersihkan, yang digunakan dalam TF-IDF Vectorizer untuk membangun representasi numerik dari teks.
-- **'Authors':** Nama penulis artikel yang digunakan dalam hasil rekomendasi.
-- **'Cites':** Jumlah sitasi artikel yang digunakan dalam rekomendasi untuk memberikan bobot lebih pada artikel yang lebih banyak disitasi.
-- **'Type':** Jenis artikel yang digunakan dalam rekomendasi.
-- **'DOI':** Digital Object Identifier, yang digunakan untuk memberikan referensi unik pada artikel.
-
-**2. Hybrid Method:**
-
-- **'Cites':** Jumlah sitasi artikel yang digunakan sebagai fitur utama dalam Item-Based Collaborative Filtering.
-- **'CitesPerYear':** Jumlah sitasi per tahun yang digunakan sebagai fitur utama dalam Collaborative Filtering.
-- **'Type':** Jenis artikel yang diubah menjadi variabel dummy (one-hot encoding) untuk membantu menemukan kesamaan artikel berdasarkan kategori artikel.
-- **'Similarity':** Kesamaan artikel yang dihitung berdasarkan fitur yang telah dinormalisasi dan dihitung menggunakan metode KNN (K-Nearest Neighbors).
 
 ### Exploratory Data Analysis (EDA)
 
-**1.    Distribusi Kutipan:** Histogram jumlah kutipan (Cites) untuk melihat persebaran pengaruh artikel.
+**1.    Distribusi Kutipan:** Histogram jumlah kutipan (Cites) untuk melihat persebaran pengaruh artikel. Grafik distribusi jumlah sitasi menunjukkan pola yang sangat miring ke kanan, di mana mayoritas artikel memiliki jumlah sitasi rendah, berkisar antara 0 hingga 100. Hanya sedikit artikel yang mencapai lebih dari 500 sitasi, bahkan sangat jarang yang memiliki lebih dari 1000 sitasi. Pola ini mengindikasikan bahwa sebagian besar artikel dalam dataset memiliki dampak yang relatif kecil dalam komunitas akademik, sedangkan beberapa artikel unggulan menunjukkan pengaruh yang signifikan. Hal ini memberikan gambaran bahwa hanya artikel tertentu dengan kontribusi besar yang berhasil menarik perhatian luas. Fokus pada artikel dengan sitasi tinggi dapat membantu peneliti memahami karakteristik penelitian yang berhasil menciptakan dampak besar.
 
 ![image](https://github.com/user-attachments/assets/0b2f1962-15ef-4e0a-9c7a-52d5e70871ae)
 
 
-**2.    Distribusi Tipe Artikel:** Melihat proporsi artikel berdasarkan Type (Article, Review, Book Chapter, Conference Paper, Short Survey, Retracted, Editorial).
+**2.    Distribusi Tipe Artikel:** Melihat proporsi artikel berdasarkan Type (Article, Review, Book Chapter, Conference Paper, Short Survey, Retracted, Editorial). Grafik frekuensi tipe artikel memperlihatkan bahwa mayoritas artikel dalam dataset bertipe "Article", diikuti oleh tipe "Review". Jenis lainnya, seperti "Conference Paper", "Book Chapter", dan "Editorial", memiliki frekuensi yang jauh lebih rendah. Dominasi tipe "Article" menunjukkan bahwa dataset ini terutama berisi penelitian primer yang dipublikasikan dalam bentuk artikel jurnal. Jenis "Review" yang menempati posisi kedua menunjukkan adanya ulasan literatur yang signifikan. Dengan demikian, rekomendasi artikel dapat lebih fokus pada tipe artikel "Article" karena lebih relevan bagi kebutuhan kebanyakan pengguna yang mencari penelitian primer.
 
 ![image](https://github.com/user-attachments/assets/6780663d-ff9b-4f99-a144-ba8c303b9962)
 
 
-**3.    Frekuensi Sumber Artikel:** Mengetahui beberapa sebaran **tempat** Artikel Ilmiah dipublikasikan.
+**3.    Frekuensi Sumber Artikel:** Mengetahui beberapa sebaran **tempat** Artikel Ilmiah dipublikasikan. Grafik frekuensi sumber artikel menunjukkan bahwa jurnal "IEEE Internet of Things Journal" dan "IEEE Access" merupakan sumber dominan dalam dataset, dengan jumlah artikel yang jauh lebih tinggi dibandingkan sumber lainnya. Selain itu, jurnal seperti "Sensors", "IEEE Transactions on Industrial Informatics", dan "Internet of Things (Netherlands)" juga menjadi kontributor signifikan. Hal ini mencerminkan bahwa dataset ini sangat berfokus pada topik-topik terkait teknologi IoT, jaringan komunikasi, dan perangkat sensor. Dominasi sumber-sumber ini menunjukkan relevansi yang tinggi dengan tren penelitian terkini di bidang teknik elektro dan teknologi informasi. Peneliti dapat memanfaatkan informasi ini untuk mengidentifikasi jurnal-jurnal yang relevan dan memiliki reputasi baik dalam topik yang diminati.
 
 ![image](https://github.com/user-attachments/assets/3bd90eb0-8281-4d86-8c0d-b5d8be069f04)
 
-**4.    Penulis dengan Artikel Terbanyak:** Mengetahui beberapa **Author** yang memiliki artikel ilmiah terbanyak.
+**4.    Penulis dengan Artikel Terbanyak:** Mengetahui beberapa **Author** yang memiliki artikel ilmiah terbanyak. Penulis dengan jumlah artikel terbanyak adalah Y. Liu, A. Rejeb, dan X. Wang, masing-masing menulis 7 artikel. Ini menunjukkan bahwa mereka adalah kontributor utama dalam penelitian atau publikasi yang terkait. Ada perbedaan signifikan antara penulis dengan jumlah artikel tertinggi (7 artikel) dan penulis lainnya yang berada di kisaran 4 hingga 5 artikel. Hal ini mencerminkan ketimpangan kontribusi di antara penulis dalam publikasi. Nama seperti Wang dan Liu tampak cukup sering muncul dalam komunitas akademik, mengindikasikan mereka mungkin bekerja dalam jaringan atau kolaborasi yang produktif.
 
 ![image](https://github.com/user-attachments/assets/2b36cd31-d7de-4b31-8b3e-544ec14a61df)
 
@@ -145,6 +114,25 @@ Pada dataset asli, terdapat beberapa kolom yang kosong atau tidak relevan dengan
 -    **Efisiensi:** Menghapus kolom yang tidak diperlukan mengurangi kompleksitas dataset, membuat model lebih efisien dalam proses perhitungan dan memori.
 -    **Relevansi:** Dengan hanya menyisakan kolom yang relevan untuk analisis, seperti 'Title', 'Authors', dan 'Cites', model dapat bekerja dengan data yang lebih terfokus dan lebih bermakna untuk rekomendasi.
 -    **Menghindari Kebingungannya Model:** Kolom-kolom yang mengandung informasi tidak relevan atau berlebihan dapat mengganggu kinerja model dan menyebabkan overfitting atau kurangnya interpretasi yang jelas.
+
+
+**2. Pembersihan Teks (*Text Cleaning*)**
+
+Proses yang dilakukan adalah pembersihan teks pada kolom **'Title'** dari dataset. Pembersihan ini dilakukan dengan mengubah teks menjadi huruf kecil, menghapus tanda baca, dan menghapus kata-kata yang tidak memiliki makna penting (*stopwords*). Pembersihan ini sangat penting karena teks yang bersih akan meningkatkan kualitas pemodelan dan mengurangi kebisingan yang bisa mengganggu proses ekstraksi fitur dan perhitungan kemiripan artikel. Misalnya, kata seperti "the," "and," atau "in" tidak memberikan informasi yang signifikan dalam analisis konten, sehingga harus dihapus untuk memperbaiki hasil pemrosesan.
+
+**Alasan Pembersihan**
+
+-    Menghapus tanda baca dan stopwords membantu mengurangi kebisingan dalam data, meningkatkan kualitas analisis, dan menghindari kesalahan dalam ekstraksi fitur.
+
+**3. Ekstraksi Fitur Menggunakan TF-IDF (*Term Frequency-Inverse Document Frequency*)**
+
+Setelah teks dibersihkan, langkah berikutnya adalah mengonversi teks yang telah dibersihkan menjadi representasi numerik dengan menggunakan TF-IDF Vectorizer. TF-IDF adalah teknik yang sangat berguna dalam pemrosesan teks untuk mengukur seberapa penting kata dalam dokumen relatif terhadap keseluruhan koleksi dokumen. TF-IDF memberikan bobot lebih tinggi pada kata yang sering muncul dalam satu artikel tetapi jarang muncul di artikel lain, yang membantu sistem memahami kata-kata kunci yang paling relevan dalam artikel tersebut.
+
+Dengan mengonversi judul artikel ke dalam bentuk vektor numerik, kita dapat lebih mudah melakukan analisis berbasis matematika, seperti penghitungan kemiripan antar artikel. Tanpa representasi numerik ini, perhitungan kemiripan menggunakan algoritma seperti cosine similarity tidak dapat dilakukan.
+
+**Alasan Ekstraksi Fitur**
+
+-    Mengonversi teks menjadi representasi numerik memungkinkan kita untuk melakukan perhitungan matematis yang dibutuhkan untuk rekomendasi berbasis konten. Tanpa ekstraksi fitur, artikel tidak dapat dianalisis dengan metode statistik seperti cosine similarity.
     
 ## Modeling and Result
 Pengembangan model sistem rekomendasi dibagi menjadi dua pendekatan utama: Content-Based Filtering dan Hybrid Method. Berikut penjelasan dari masing-masing pendekatan yang diterapkan.
@@ -155,9 +143,7 @@ Pengembangan model sistem rekomendasi dibagi menjadi dua pendekatan utama: Conte
 
 #### **Proses Content-Based Filtering:**
 
--    **Data Cleaning:** Kolom judul artikel ("Title") dibersihkan dari karakter khusus, tanda baca, dan stopwords untuk memperoleh teks yang lebih murni.
--    **TF-IDF Vectorization:** Menggunakan TF-IDF Vectorizer untuk mengubah teks judul menjadi representasi numerik yang dapat dihitung jarak kesamaannya.
--    **Cosine Similarity:** Menghitung cosine similarity antar artikel berdasarkan representasi numerik untuk menemukan artikel yang paling relevan dengan artikel yang dicari pengguna.
+-    **Cosine Similarity:** Menghitung cosine similarity antar artikel berdasarkan representasi numerik untuk menemukan artikel yang paling relevan dengan artikel yang dicari pengguna. Nilai similarity yang tinggi menunjukkan bahwa dua artikel memiliki kesamaan konten. Proses ini penting dalam membangun sistem rekomendasi karena memungkinkan kita untuk menemukan artikel yang paling relevan dengan artikel yang sedang dianalisis.
 
 #### **Kelebihan Content-Based Filtering:**
 
@@ -192,93 +178,6 @@ Keyword : health
 
 ---
 
-### **Hybrid Method**
-
-Pada sistem rekomendasi ini, Hybrid Method menggabungkan dua pendekatan yang berbeda untuk meningkatkan akurasi dan relevansi hasil rekomendasi artikel: Content-Based Filtering dan Collaborative Filtering. Proses ini akan memberikan rekomendasi yang lebih relevan berdasarkan konten artikel serta kesamaan antar artikel berdasarkan interaksi data. 
-
-#### **Proses Hybrid**
-1. Content-Based Filtering (CBF):
-
--    Pada langkah pertama, sistem akan menggunakan pendekatan Content-Based Filtering untuk menghasilkan rekomendasi. Di sini, artikel-artikel dipilih berdasarkan kesamaan judul dengan kata kunci yang dimasukkan oleh pengguna.
--    TF-IDF Vectorization digunakan untuk mengubah judul artikel menjadi representasi numerik. Ini dilakukan untuk mengukur seberapa penting suatu kata dalam judul artikel terkait dengan kata kunci yang diberikan.
--    Setelah itu, cosine similarity dihitung untuk menilai seberapa mirip artikel yang relevan dengan kata kunci yang diberikan.
--    Artikel-artikel yang memiliki nilai cosine similarity tinggi dianggap relevan dan dipilih untuk disarankan kepada pengguna.
-
-2. Collaborative Filtering (CF):
-
--    Setelah mendapatkan artikel-artikel yang relevan berdasarkan Content-Based Filtering, langkah selanjutnya adalah menggunakan Collaborative Filtering.
--    Collaborative Filtering berfokus pada kesamaan artikel berdasarkan fitur-fitur tambahan yang ada, seperti jumlah Cites (sitasi) dan CitesPerYear (jumlah sitasi per tahun).
--    Selain itu, informasi tentang jenis artikel (Type) diubah menjadi variabel dummy menggunakan One-Hot Encoding untuk memperhitungkan kategori artikel.
--    Data fitur ini kemudian dinormalisasi menggunakan StandardScaler, dan model K-Nearest Neighbors (KNN) digunakan untuk menemukan kesamaan antar artikel berdasarkan fitur-fitur tersebut.
--    Artikel-artikel yang memiliki jarak cosine distance kecil dari artikel relevan dianggap sebagai rekomendasi yang baik dan dipilih untuk ditampilkan kepada pengguna.
-
-3. Penggabungan Kedua Metode:
-
--    Setelah kedua pendekatan ini dijalankan, sistem akan menggabungkan hasilnya untuk memberikan rekomendasi yang lebih baik.
--    Artikel yang relevan berdasarkan Content-Based Filtering akan diproses lebih lanjut menggunakan Collaborative Filtering untuk menilai kesamaan antara artikel-artikel tersebut.
--    Rekomendasi akhir akan disusun berdasarkan artikel yang memiliki similarity tertinggi, dengan memperhitungkan kedua metode tersebut secara bersamaan.
-
-
-#### **Kelebihan Hybrid Method**
-
-1.    Mengatasi Keterbatasan Masing-Masing Pendekatan:
-
--  Content-Based Filtering dapat memberikan hasil yang sangat spesifik berdasarkan konten artikel (judul), namun ia memiliki keterbatasan dalam hal keberagaman rekomendasi, terutama jika artikel yang relevan berdasarkan kata kunci terbatas.
--  Collaborative Filtering dapat memberikan rekomendasi yang lebih beragam berdasarkan pola interaksi pengguna atau atribut lain seperti sitasi, tetapi ia bergantung pada data interaksi yang lebih banyak dan mungkin tidak efektif jika data interaksi tidak tersedia (cold start problem).
--  Dengan menggabungkan kedua metode, Hybrid Method dapat mengatasi keterbatasan masing-masing dan memberikan rekomendasi yang lebih akurat dan relevan.
-
-2.    Peningkatan Relevansi:
-- Dengan menggabungkan Content-Based Filtering yang mempertimbangkan kesamaan judul dan Collaborative Filtering yang mempertimbangkan kesamaan berdasarkan fitur lain seperti sitasi, sistem ini dapat memberikan rekomendasi yang lebih komprehensif dan relevan, baik berdasarkan konten maupun interaksi antar artikel.
-
-3.    Pengurangan Overfitting:
--  Pendekatan ini juga mengurangi risiko overfitting yang mungkin terjadi jika hanya satu metode yang digunakan, karena data dianalisis dari berbagai sudut pandang (konten dan interaksi).
-
-#### **Kekurangan Hybrid Method**
-
-1.    Kompleksitas yang Lebih Tinggi:
-- Hybrid Method membutuhkan pemrosesan yang lebih rumit karena menggabungkan dua metode yang berbeda. Ini meningkatkan kompleksitas dalam hal implementasi dan waktu komputasi, karena kedua pendekatan perlu diterapkan secara terpisah dan kemudian digabungkan.
-- Waktu komputasi bisa lebih lama, terutama jika jumlah data sangat besar.
-
-2.    Data yang Lebih Banyak Diperlukan:
--  Untuk menerapkan Collaborative Filtering secara efektif, sistem memerlukan data yang lebih banyak, seperti jumlah sitasi dan interaksi antar artikel. Jika data yang tersedia terbatas, terutama pada artikel baru atau artikel yang jarang disitasi, maka hasilnya mungkin kurang optimal.
--  Cold start problem masih menjadi tantangan jika data yang cukup tidak tersedia untuk artikel baru atau artikel dengan sedikit interaksi.
-
-3.    Pemeliharaan dan Pembaruan yang Lebih Rumit:
--  Karena melibatkan dua pendekatan yang berbeda, Hybrid Method memerlukan pemeliharaan dan pembaruan yang lebih sering dan lebih kompleks. Pembaruan data atau perubahan dalam satu metode bisa mempengaruhi hasil rekomendasi secara keseluruhan.
-
-#### **Output dari Sistem Rekomendasi**
-
-Output dari sistem rekomendasi menggunakan **Hybrid Method** adalah daftar **Top-N artikel** yang paling relevan berdasarkan gabungan dari kedua metode rekomendasi tersebut. Output ini terdiri dari beberapa informasi terkait setiap artikel, seperti:
-
-1.    Artikel ID: ID unik untuk artikel yang dapat digunakan untuk merujuk artikel dalam database.
-2.    Authors: Nama-nama penulis artikel yang relevan.
-3.    Title: Judul artikel yang relevan dengan kata kunci yang dimasukkan oleh pengguna.
-4.    Cites: Jumlah sitasi yang diterima oleh artikel, menunjukkan seberapa berpengaruh artikel tersebut.
-5.    Type: Tipe artikel (misalnya, jurnal, konferensi, laporan, dll.).
-6.    DOI: Digital Object Identifier (DOI) artikel yang digunakan untuk mengidentifikasi artikel secara unik.
-7.    Similarity: Skor kesamaan antara artikel yang direkomendasikan dengan artikel relevan berdasarkan Collaborative Filtering. Semakin tinggi skor, semakin mirip artikel tersebut dengan artikel yang dicari.
-
-Rekomendasi ini disusun berdasarkan similarity tertinggi, yang mencerminkan artikel-artikel yang paling relevan dengan preferensi pengguna baik berdasarkan konten maupun fitur interaksi artikel. Artikel-artikel ini diurutkan dengan cara yang memudahkan pengguna untuk menemukan artikel yang relevan dan bermanfaat bagi kebutuhan mereka.
-
-
-**Contoh Output:**
-
-Keyword : Health
-
-|index|Artikel ID|Authors|Title|Cites|Type|DOI|Similarity|
-|---|---|---|---|---|---|---|---|
-|744|744|H\.R\. Chi|Healthcare 5\.0: In the Perspective of Consumer Internet-of-Things-Based Fog/Cloud Computing|36|Article|10\.1109/TCE\.2023\.3293993|1\.0|
-|805|805|A\. Abbas|Blockchain-assisted secured data management framework for health information analysis based on Internet of Medical Things|44|Article|10\.1007/s00779-021-01583-8|0\.7623200113283101|
-|681|681|A\.A\. Khan|Data Security in Healthcare Industrial Internet of Things With Blockchain|49|Article|10\.1109/JSEN\.2023\.3273851|0\.6034141277556289|
-|828|828|C\. Chakraborty|FC-SEEDA: fog computing-based secure and energy efficient data aggregation scheme for Internet of healthcare Things|20|Article|10\.1007/s00521-023-08270-0|0\.421421198323368|
-|873|873|J\.K\. Samriya|Adversarial ML-Based Secured Cloud Architecture for Consumer Internet of Things of Smart Healthcare|12|Article|10\.1109/TCE\.2023\.3341696|0\.27158636254570656|
-|528|528|J\. Zhang|An Efficient Blockchain-Based Hierarchical Data Sharing for Healthcare Internet of Things|66|Article|10\.1109/TII\.2022\.3145851|-0\.10272237433010534|
-|525|525|L\.K\. Ramasamy|Secure Smart Wearable Computing through Artificial Intelligence-Enabled Internet of Things and Cyber-Physical Systems for Health Monitoring|67|Article|10\.3390/s22031076|-0\.11319916778405092|
-|508|508|J\. Shahid|Data Protection and Privacy of the Internet of Healthcare Things \(IoHTs\)|70|Review|10\.3390/app12041927|-0\.5813165594459233|
-|338|338|B\.D\. Deebak|Smart Mutual Authentication Protocol for Cloud Based Medical Healthcare Systems Using Internet of Medical Things|95|Article|10\.1109/JSAC\.2020\.3020599|-0\.6057570696334511|
-|349|349|S\. Shukla|Identification and Authentication in Healthcare Internet-of-Things Using Integrated Fog Computing Based Blockchain Model|90|Article|10\.1016/j\.iot\.2021\.100422|-0\.616200170529646|
-
----
 
 ## **Evaluation**
 
@@ -307,46 +206,6 @@ Berdasarkan nilai Precision@K maka diperoleh nilai sebesar 1 untuk kedua metode 
 -----
 
 ## **Kesimpulan**
-
-**PERBANDINGAN HASIL CONTENT BASED FILTERING DAN HYBRID METHOD**
-|index|Artikel ID|Authors|Title|Cites|Type|DOI|Method|Similarity|
-|---|---|---|---|---|---|---|---|---|
-|432|432|A\. Kishor|Artificial Intelligence and Internet of Things Based Healthcare 4\.0 Monitoring System|121|Article|10\.1007/s11277-021-08708-5|Content-Based|NaN|
-|338|338|B\.D\. Deebak|Smart Mutual Authentication Protocol for Cloud Based Medical Healthcare Systems Using Internet of Medical Things|95|Article|10\.1109/JSAC\.2020\.3020599|Content-Based|NaN|
-|338|338|B\.D\. Deebak|Smart Mutual Authentication Protocol for Cloud Based Medical Healthcare Systems Using Internet of Medical Things|95|Article|10\.1109/JSAC\.2020\.3020599|Hybrid-Based|-0\.6057570696334511|
-|349|349|S\. Shukla|Identification and Authentication in Healthcare Internet-of-Things Using Integrated Fog Computing Based Blockchain Model|90|Article|10\.1016/j\.iot\.2021\.100422|Hybrid-Based|-0\.616200170529646|
-|508|508|J\. Shahid|Data Protection and Privacy of the Internet of Healthcare Things \(IoHTs\)|70|Review|10\.3390/app12041927|Content-Based|NaN|
-|508|508|J\. Shahid|Data Protection and Privacy of the Internet of Healthcare Things \(IoHTs\)|70|Review|10\.3390/app12041927|Hybrid-Based|-0\.5813165594459233|
-|525|525|L\.K\. Ramasamy|Secure Smart Wearable Computing through Artificial Intelligence-Enabled Internet of Things and Cyber-Physical Systems for Health Monitoring|67|Article|10\.3390/s22031076|Content-Based|NaN|
-|525|525|L\.K\. Ramasamy|Secure Smart Wearable Computing through Artificial Intelligence-Enabled Internet of Things and Cyber-Physical Systems for Health Monitoring|67|Article|10\.3390/s22031076|Hybrid-Based|-0\.11319916778405092|
-|528|528|J\. Zhang|An Efficient Blockchain-Based Hierarchical Data Sharing for Healthcare Internet of Things|66|Article|10\.1109/TII\.2022\.3145851|Content-Based|NaN|
-|528|528|J\. Zhang|An Efficient Blockchain-Based Hierarchical Data Sharing for Healthcare Internet of Things|66|Article|10\.1109/TII\.2022\.3145851|Hybrid-Based|-0\.10272237433010534|
-|681|681|A\.A\. Khan|Data Security in Healthcare Industrial Internet of Things With Blockchain|49|Article|10\.1109/JSEN\.2023\.3273851|Content-Based|NaN|
-|681|681|A\.A\. Khan|Data Security in Healthcare Industrial Internet of Things With Blockchain|49|Article|10\.1109/JSEN\.2023\.3273851|Hybrid-Based|0\.6034141277556289|
-|694|694|M\. Osama|Internet of Medical Things and Healthcare 4\.0: Trends, Requirements, Challenges, and Research Directions|45|Review|10\.3390/s23177435|Content-Based|NaN|
-|805|805|A\. Abbas|Blockchain-assisted secured data management framework for health information analysis based on Internet of Medical Things|44|Article|10\.1007/s00779-021-01583-8|Hybrid-Based|0\.7623200113283101|
-|806|806|V\. Puri|Artificial intelligence-powered decentralized framework for Internet of Things in Healthcare 4\.0|43|Conference Paper|10\.1002/ett\.4245|Content-Based|NaN|
-|743|743|N\. Savanović|Intrusion Detection in Healthcare 4\.0 Internet of Things Systems via Metaheuristics Optimized Machine Learning|36|Article|10\.3390/su151612563|Content-Based|NaN|
-|744|744|H\.R\. Chi|Healthcare 5\.0: In the Perspective of Consumer Internet-of-Things-Based Fog/Cloud Computing|36|Article|10\.1109/TCE\.2023\.3293993|Hybrid-Based|1\.0|
-|828|828|C\. Chakraborty|FC-SEEDA: fog computing-based secure and energy efficient data aggregation scheme for Internet of healthcare Things|20|Article|10\.1007/s00521-023-08270-0|Hybrid-Based|0\.421421198323368|
-|873|873|J\.K\. Samriya|Adversarial ML-Based Secured Cloud Architecture for Consumer Internet of Things of Smart Healthcare|12|Article|10\.1109/TCE\.2023\.3341696|Content-Based|NaN|
-|873|873|J\.K\. Samriya|Adversarial ML-Based Secured Cloud Architecture for Consumer Internet of Things of Smart Healthcare|12|Article|10\.1109/TCE\.2023\.3341696|Hybrid-Based|0\.27158636254570656|
-
-
-## Keunggulan Metode Hybrid dalam Sistem Rekomendasi
-
-Metode **hybrid** dalam sistem rekomendasi menggabungkan kekuatan dari dua pendekatan berbeda: **Content-Based Filtering** dan **Collaborative Filtering**. Keunggulan utama dari metode hybrid terletak pada kemampuannya untuk memberikan rekomendasi yang lebih akurat dan relevan dibandingkan dengan metode **Content-Based Filtering** yang hanya mengandalkan kesamaan dalam judul artikel. 
-
-### Content-Based Filtering
-Pada metode content-based, sistem hanya menilai kesamaan berdasarkan elemen-elemen konten yang ada, seperti kata-kata dalam judul artikel. Oleh karena itu, meskipun artikel yang memiliki kesamaan judul bisa direkomendasikan, pendekatan ini terbatas pada fitur konten yang sangat spesifik dan cenderung mengabaikan faktor lain yang bisa memengaruhi relevansi artikel bagi pengguna. Sistem ini tidak memperhitungkan faktor eksternal, seperti seberapa populer atau sering dikutipnya artikel tersebut, yang bisa menjadi indikator kualitas atau relevansi lebih lanjut.
-
-### Hybrid Filtering
-Di sisi lain, metode **hybrid** mengintegrasikan **Content-Based Filtering** dengan **Collaborative Filtering**. Content-Based Filtering memberikan rekomendasi berdasarkan kesamaan topik atau konten, seperti kesamaan judul artikel yang relevan dengan kata kunci yang dicari pengguna. Sementara itu, **Collaborative Filtering** menambahkan dimensi lain dengan mempertimbangkan faktor-faktor yang lebih luas, seperti popularitas artikel, yang diukur melalui jumlah sitasi atau bagaimana artikel tersebut diapresiasi oleh pengguna lain dalam sistem. Hal ini memungkinkan sistem untuk merekomendasikan artikel-artikel yang tidak hanya relevan dengan kata kunci, tetapi juga yang dianggap lebih penting atau berguna oleh komunitas atau komunitas ilmiah lebih luas.
-
-### Keunggulan Sistem Hybrid
-Dengan menggabungkan kedua pendekatan tersebut, sistem hybrid mampu menghasilkan rekomendasi yang lebih beragam dan lebih akurat. Artikel yang direkomendasikan tidak hanya didasarkan pada kesamaan isi, tetapi juga mempertimbangkan konteks yang lebih besar, seperti penerimaan dan dampak artikel dalam bidang yang relevan. Dengan demikian, pengguna dapat menerima rekomendasi yang lebih holistik dan bervariasi, meningkatkan kualitas rekomendasi yang diberikan sesuai dengan preferensi dan kebutuhan pengguna.
-
-Secara keseluruhan, pendekatan hybrid memperbaiki keterbatasan dari masing-masing metode secara individual, menjadikannya pilihan yang lebih unggul dalam menciptakan sistem rekomendasi yang efektif dan relevan dalam skenario yang kompleks.
-
+Pada metode **content-based filtering**, sistem hanya menilai kesamaan berdasarkan elemen-elemen konten yang ada, seperti kata-kata dalam judul artikel. Oleh karena itu, meskipun artikel yang memiliki kesamaan judul bisa direkomendasikan, pendekatan ini terbatas pada fitur konten yang sangat spesifik dan cenderung mengabaikan faktor lain yang bisa memengaruhi relevansi artikel bagi pengguna. Sistem ini tidak memperhitungkan faktor eksternal, seperti seberapa populer atau sering dikutipnya artikel tersebut, yang bisa menjadi indikator kualitas atau relevansi lebih lanjut.
 
 **------**
